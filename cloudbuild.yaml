@@ -1,5 +1,5 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/learning-terraform-with-gcp/github.com/masoodahmedrafay1/git-gcp-docker:$SHORT_SHA', '.']
+  args: ['build', '-t', 'gcr.io/learning-terraform-with-gcp/github.com/masoodahmedrafay1/github.com/masoodahmedrafay1/git-gcp-docker:e8fc4de513707e90e9923b7e5ac0e57962698835:$SHORT_SHA', '.']
   - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/learning-terraform-with-gcp/github.com/masoodahmedrafay1/git-gcp-docker:$SHORT_SHA', '.']
+  args: ['push', 'gcr.io/learning-terraform-with-gcp/github.com/masoodahmedrafay1/github.com/masoodahmedrafay1/git-gcp-docker:e8fc4de513707e90e9923b7e5ac0e57962698835:$SHORT_SHA', '.']
