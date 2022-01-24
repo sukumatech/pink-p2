@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "dev-io-kxd-app-bucket"
-    prefix = "terraform-hel/vpc.tfstate"
+    bucket = "dev-io-nsv-app-bucket"
+    prefix = "terraform/cloudrun.tfstate"
   }
 }

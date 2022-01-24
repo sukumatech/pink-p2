@@ -1,4 +1,3 @@
-//required
 resource "random_string" "name" {
   length  = 3
   upper   = false
@@ -9,14 +8,7 @@ resource "random_string" "name" {
 
 variable "environment" {
   type = string
-  //default = [dev, prd, stg]
-}
-
-locals {
-  #name = "${var.environment}-${random_string.name.result}-service"
-  region = jsondecode(file("${path.module}/c-code.tftpl"))[var.location]
-  #code = "${var.location}"
-  name = "${var.environment}-${lower(var.location)}-${random_string.name.result}-${var.appname}"
+  description = "environment where the app is running"
 }
 
 variable "appname" {
@@ -26,22 +18,19 @@ variable "appname" {
 }
 
 variable "location" {
-  type        = string
+  type        = list
   description = "Location of the service."
-  default = "us-central1"
+  default = ["us-central1"]
 }
-#--------------------------------------------------- NAMING CONVENTION IS ABOVE SHOULD BE A MODULE-----------------------------------------------------
+
 variable "image" {
   type        = string
   description = "Docker image name."
   default = "gcr.io/terraform-gcptap/calc:v3"
 }
 
-
-
 variable "project" {
   type        = string
-  default     = "terraform-gcptap"
   description = "Google Cloud project in which to create resources."
 }
 
@@ -76,5 +65,3 @@ variable "service" {
   type        = string
   default = ""
 }
-
-//naming 
