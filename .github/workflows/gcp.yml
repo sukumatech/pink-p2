@@ -1,7 +1,7 @@
 name: Build and Push React Image to Google Cloud Platform
 on:
   push:
-    branches: [development]
+    branches: [main]
 jobs:
   build-push-gcr:
     name: Build and Push to GCP
