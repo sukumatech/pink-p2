@@ -1,9 +1,0 @@
-project       = "terraform-gcptap"
-appname       = "calc"
-location      = ["HA", "LV", "LK", "IO"]
-image         = "gcr.io/terraform-gcptap/calc:v3"
-port          = 80
-max_instances = 5
-min_instances = 1
-revision      = true
-environment = "dev"
