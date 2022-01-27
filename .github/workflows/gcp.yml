@@ -51,7 +51,7 @@ jobs:
         uses: hashicorp/setup-terraform@v1
 
       - name: Terraform init
-        run: terraform init
+        run: terraform -chdir=profiles/cloudrun init
         env:
           service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
           project_id: ${{ env.PROJECT_ID }}
@@ -63,14 +63,14 @@ jobs:
 #        run: terraform fmt -check
 
       - name: Terraform Plan
-        run: terraform plan
+        run: terraform -chdir=profiles/cloudrun plan
         env:
           service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
           project_id: ${{ env.PROJECT_ID }}
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-        run: terraform apply -auto-approve
+        run: terraform -chdir=profiles/cloudrun apply -auto-approve
         env:
           service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
           project_id: ${{ env.PROJECT_ID }}
