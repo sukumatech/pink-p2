@@ -16,6 +16,8 @@ data "google_client_config" "default" {}
 provider "docker" {
   registry_auth {
     address  = "gcr.io"
+    username = "oauth2accesstoken"
+    password = data.google_client_config.default.access_token
   }
 }
 
