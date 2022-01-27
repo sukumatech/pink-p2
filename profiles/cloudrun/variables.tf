@@ -34,11 +34,6 @@ variable "project" {
   description = "Google Cloud project in which to create resources."
 }
 
-variable "version_lb" {
-  type        = string
-  description = "Version of load-balancer"
-}
-
 // Optional Inputs
 variable "port" {
   type        = number
