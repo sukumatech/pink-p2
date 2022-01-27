@@ -1,0 +1,65 @@
+name: Build and Push React Image to Google Cloud Platform
+on:
+  push:
+    branches: [master]
+jobs:
+  build-push-gcr:
+    name: Build and Push to GCP
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: react-image
+      PROJECT_ID: test-mala-calc
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Login with GCP
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+      #    export_default_credentials: true​
+      - name: Build Docker Image
+        run: docker build -t $IMAGE_NAME:latest .
+      - name: Configure Docker Client
+        run: |-
+          gcloud auth configure-docker --quiet
+      - name: Push Docker Image to Container Registry
+        env:
+          GIT_TAG: v5.0
+        run: |-
+          docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
+          docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
+          docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
+          docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: calc-image
+      PROJECT_ID: test-mala-calc
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+      - name: Terraform init
+        run: terraform -chdir=profiles/cloudrun init
+        env:
+          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
+          #project_id: ${{ env.PROJECT_ID }}
+      - name: Terraform Format Diffrences
+        run: terraform fmt --diff
+        
+#      - name: Terraform Format
+#        run: terraform fmt -check
+      - name: Terraform Plan
+        run: terraform -chdir=profiles/cloudrun plan
+        env:
+          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
+          #project_id: ${{ env.PROJECT_ID }}
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        run: terraform -chdir=profiles/cloudrun apply -auto-approve
+        env:
+          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
+         # project_id: ${{ env.PROJECT_ID }}
