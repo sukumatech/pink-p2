@@ -1,12 +1,38 @@
-name: 'Terraform CI'
-
+name: Build and Push React Image to Google Cloud Platform
 on:
   push:
-    branches:
-    - gerald_branch
-  pull_request:
-
+    branches: [gerad_branch]
 jobs:
+  build-push-gcr:
+    name: Build and Push to GCP
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: calc-image
+      PROJECT_ID: test-mala-calc
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Login with GCP
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+      #    export_default_credentials: true​
+      - name: Build Docker Image
+        run: docker build -t $IMAGE_NAME:latest .
+      - name: Configure Docker Client
+        run: |-
+          gcloud auth configure-docker --quiet
+      - name: Push Docker Image to Container Registry
+        env:
+          GIT_TAG: v6.0
+        run: |-
+          docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
+          docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
+          docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
+          docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
+
+
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
@@ -48,7 +74,7 @@ jobs:
       # On push to main, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve
+      if: github.ref == 'refs/heads/gerald_branch' && github.event_name == 'push'
+      run: terraform -chdir=profiles/cloudrun apply -auto-approve, --var-file=cloudrun.tfvars
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
