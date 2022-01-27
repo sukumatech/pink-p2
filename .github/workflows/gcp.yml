@@ -7,7 +7,7 @@ jobs:
     name: Build and Push to GCP
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: calc-image
+      IMAGE_NAME: react-image
       PROJECT_ID: test-mala-calc
     steps:
       - name: Checkout
@@ -18,7 +18,7 @@ jobs:
         env:
           service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
           project_id: ${{ env.PROJECT_ID }}
-          export_default_credentials: true​
+          export_default_credentials: true
 
       - name: Build Docker Image
         run: docker build -t $IMAGE_NAME:latest .
@@ -29,7 +29,7 @@ jobs:
 
       - name: Push Docker Image to Container Registry
         env:
-          GIT_TAG: v4.0
+          GIT_TAG: v1.0
         run: |-
           docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
           docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
