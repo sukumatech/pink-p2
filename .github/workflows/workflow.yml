@@ -3,7 +3,7 @@ name: 'Terraform CI'
 on:
   push:
     branches:
-    - main
+    - gerald_branch
   pull_request:
 
 jobs:
