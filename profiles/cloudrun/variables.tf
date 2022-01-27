@@ -36,7 +36,6 @@ variable "project" {
 
 variable "version_lb" {
   type        = string
-  default     = "6.2.0"
   description = "Version of load-balancer"
 }
 
