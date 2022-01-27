@@ -68,11 +68,12 @@ resource "google_compute_region_network_endpoint_group" "cloudrun_endpoint" {
 module "lb-http" {
   source            = "GoogleCloudPlatform/lb-http/google//modules/serverless_negs"
   project           = var.project
+  version           = var.version_lb
   name              = "lb"
 
   ssl                             = false
   managed_ssl_certificate_domains = [null]
-  https_redirect                  =false
+  https_redirect                  = false
   http_forward                    = true
   create_url_map                  = true
   backends = {
