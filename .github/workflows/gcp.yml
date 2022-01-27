@@ -1,7 +1,7 @@
 name: Build and Push React Image to Google Cloud Platform
 on:
   push:
-    branches: [master]
+    branches: [dev]
 jobs:
   build-push-gcr:
     name: Build and Push to GCP
@@ -38,28 +38,14 @@ jobs:
       IMAGE_NAME: calc-image
       PROJECT_ID: test-mala-calc
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-      - name: Terraform init
-        run: terraform -chdir=profiles/cloudrun init
-        env:
-          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
-          #project_id: ${{ env.PROJECT_ID }}
-      - name: Terraform Format Diffrences
-        run: terraform fmt --diff
-        
-#      - name: Terraform Format
-#        run: terraform fmt -check
-      - name: Terraform Plan
-        run: terraform -chdir=profiles/cloudrun plan
-        env:
-          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
-          #project_id: ${{ env.PROJECT_ID }}
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-        run: terraform -chdir=profiles/cloudrun apply -auto-approve
-        env:
-          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
-         # project_id: ${{ env.PROJECT_ID }}
+# 0. Initialize Terraform environment
+  - name: hashicorp/terraform
+    id: terraform-init
+    args: ['init']
+#    dir: 'pink-p2/environments/dev'
+# 1. Apply Terraform
+  - name: hashicorp/terraform
+    id: terraform-apply
+    args: ['apply', '-auto-approve']
+#    dir:  'pink-p2/environments/dev'
+# temp
