@@ -52,15 +52,9 @@ jobs:
 
       - name: Terraform init
         run: terraform -chdir=profiles/cloudrun init
-
-      - name: Login with GCP
-        uses: google-github-actions/setup-gcloud@v0
-        with:
-          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-          project_id: ${{ env.PROJECT_ID }}        
-#        env:
-#          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-#          project_id: ${{ env.PROJECT_ID }}
+        env:
+          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
+          project_id: ${{ env.PROJECT_ID }}
 
       - name: Terraform Format Diffrences
         run: terraform fmt --diff
@@ -71,12 +65,12 @@ jobs:
       - name: Terraform Plan
         run: terraform -chdir=profiles/cloudrun plan
         env:
-          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
           project_id: ${{ env.PROJECT_ID }}
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         run: terraform -chdir=profiles/cloudrun apply -auto-approve
         env:
-          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
           project_id: ${{ env.PROJECT_ID }}
