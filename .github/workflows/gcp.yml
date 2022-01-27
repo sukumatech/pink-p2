@@ -54,7 +54,7 @@ jobs:
         run: terraform -chdir=profiles/cloudrun init
         env:
           service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
-          project_id: ${{ env.PROJECT_ID }}
+#          project_id: ${{ env.PROJECT_ID }}
 
       - name: Terraform Format Diffrences
         run: terraform fmt --diff
@@ -66,11 +66,11 @@ jobs:
         run: terraform -chdir=profiles/cloudrun plan
         env:
           service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
-          project_id: ${{ env.PROJECT_ID }}
+#          project_id: ${{ env.PROJECT_ID }}
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         run: terraform -chdir=profiles/cloudrun apply -auto-approve
         env:
           service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
-          project_id: ${{ env.PROJECT_ID }}
+#          project_id: ${{ env.PROJECT_ID }}
