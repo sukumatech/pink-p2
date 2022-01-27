@@ -52,9 +52,15 @@ jobs:
 
       - name: Terraform init
         run: terraform -chdir=profiles/cloudrun init
-        env:
+
+      - name: Login with GCP
+        uses: google-github-actions/setup-gcloud@v0
+        with:
           service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-          project_id: ${{ env.PROJECT_ID }}
+          project_id: ${{ env.PROJECT_ID }}        
+#        env:
+#          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+#          project_id: ${{ env.PROJECT_ID }}
 
       - name: Terraform Format Diffrences
         run: terraform fmt --diff
