@@ -34,7 +34,7 @@ jobs:
 
 
   terraform:
-    needs: build-push-gcr
+    #needs: build-push-gcr
     name: 'Terraform'
     runs-on: ubuntu-latest
 
