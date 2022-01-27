@@ -68,7 +68,7 @@ resource "google_compute_region_network_endpoint_group" "cloudrun_endpoint" {
 module "lb-http" {
   source            = "GoogleCloudPlatform/lb-http/google//modules/serverless_negs"
   project           = var.project
-  version           = "6.0.0"
+  version           = "6.2.0"
   name              = "lb"
 
   ssl                             = false
