@@ -108,7 +108,7 @@ module "lb-http" {
   source            = "GoogleCloudPlatform/lb-http/google//modules/serverless_negs"
   project           = var.project
   version           = "6.2.0"
-  name              = "lb"
+  name              = "${var.environment}-${random_string.name.result}-${var.appname}"
 
   ssl                             = false
   managed_ssl_certificate_domains = [null]
