@@ -78,3 +78,11 @@ jobs:
       run: terraform -chdir=profiles/cloudrun apply -auto-approve
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
+
+    - name: Terraform Destroy
+      # If any commit message in your push or the HEAD commit of your PR 
+      # contains the strings [detruire] -- then terraform Destry step will run
+      if: "contains(github.event.commits[0].message, '[del]')"
+      # terraform plan -destroy
+      run: |
+       terraform apply -destroy -auto-approve
