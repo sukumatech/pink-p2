@@ -1,6 +1,45 @@
+terraform {
+  required_providers {
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "2.16.0"
+    }
+  }
+}
+
 provider "google" {
   project = var.project
 }
+
+data "google_client_config" "default" {}
+
+provider "docker" {
+  registry_auth {
+    address  = "gcr.io"
+    username = "oauth2accesstoken"
+    password = data.google_client_config.default.access_token
+  }
+}
+
+data "google_container_registry_image" "myapp_tagged" {
+  name = "calc-image"
+  tag  = var.environment
+}
+
+data "docker_registry_image" "myapp" {
+  name = "${data.google_container_registry_image.myapp_tagged.image_url}"
+}
+
+data "google_container_registry_image" "myapp" {
+  name   = "calc-image"
+  digest = "${data.docker_registry_image.myapp.sha256_digest}"
+}
+
+output "gcr_image_info" {
+  value = data.google_container_registry_image.myapp
+}
+
+
 
 # ---------------------------------------------------------------------------------------------------------------------
 # cloudrun
@@ -12,7 +51,7 @@ module "cloudrun" {
   name = "${var.environment}-${lower(each.key)}-${random_string.name.result}-${var.appname}"
   location = jsondecode(file("${path.module}/c-code.tftpl"))[each.key]
 
-  image    = var.image
+  image    = data.google_container_registry_image.myapp.image_url
   max_instances = var.max_instances
   min_instances = var.min_instances
 
@@ -68,8 +107,8 @@ resource "google_compute_region_network_endpoint_group" "cloudrun_endpoint" {
 module "lb-http" {
   source            = "GoogleCloudPlatform/lb-http/google//modules/serverless_negs"
   project           = var.project
-  version           = "6.0.0"
-  name              = "lb"
+  version           = "6.2.0"
+  name              = "${var.environment}-${random_string.name.result}-${var.appname}"
 
   ssl                             = false
   managed_ssl_certificate_domains = [null]
