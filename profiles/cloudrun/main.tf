@@ -23,7 +23,7 @@ provider "docker" {
 
 data "google_container_registry_image" "myapp_tagged" {
   name = "calc-image"
-  tag  = "dev"
+  tag  = var.environment
 }
 
 data "docker_registry_image" "myapp" {
