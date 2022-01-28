@@ -1,7 +1,7 @@
 name: Build and Push React Image to Google Cloud Platform
 on:
   push:
-    branches: [prod]
+    branches: [master]
 jobs:
   build-push-gcr:
     name: Build and Push to GCP
@@ -74,7 +74,17 @@ jobs:
     
     #Apply the plan
     - name: Terraform Apply
-      if: github.ref == 'refs/heads/prod' && github.event_name == 'push'
+      if: github.ref == 'refs/heads/master' && github.event_name == 'push'
       run: terraform -chdir=profiles/cloudrun apply -auto-approve
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
+    
+    - name: Terraform Destroy
+      # If any commit message in your push or the HEAD commit of your PR 
+      # contains the strings [detruire] -- then terraform Destry step will run
+      if: "contains(github.event.commits[0].message, 'del')"
+      # terraform plan -destroy
+      run: |
+       terraform -chdir=profiles/cloudrun apply -destroy -auto-approve
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
