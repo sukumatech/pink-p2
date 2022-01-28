@@ -86,3 +86,5 @@ jobs:
       # terraform plan -destroy
       run: |
        terraform -chdir=profiles/cloudrun apply -destroy -auto-approve
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
