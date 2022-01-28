@@ -23,7 +23,7 @@ provider "docker" {
 
 data "google_container_registry_image" "myapp_tagged" {
   name = "calc-image"
-  tag  = "latest"
+  tag  = "dev"
 }
 
 data "docker_registry_image" "myapp" {
@@ -58,7 +58,7 @@ module "cloudrun" {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
-# IAM POLICICY
+# IAM POLICY
 #IT ALLOWS EVERYONE TO MAKE CONNECTION
 # ---------------------------------------------------------------------------------------------------------------------
 module "iam-policy" {

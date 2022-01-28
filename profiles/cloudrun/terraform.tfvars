@@ -1,9 +1,8 @@
 project       = "test-mala-calc"
 appname       = "calc"
-location      = ["HA", "LV"]
-#image         = "gcr.io/test-mala-calc/calc-image:v6.0"
+location      = ["WR"]
 port          = 80
 max_instances = 5
 min_instances = 1
 revision      = true
-environment = "prod"
+environment = "dev"
