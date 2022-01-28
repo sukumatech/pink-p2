@@ -23,12 +23,6 @@ variable "location" {
 # default = ["us-central1"]
 }
 
-/*variable "image" {
-  type        = string
-  description = "Docker image name."
-#  default = "gcr.io/myproject-calculator-337809/calcimage:v1"
-}*/
-
 variable "project" {
   type        = string
   description = "Google Cloud project in which to create resources."
