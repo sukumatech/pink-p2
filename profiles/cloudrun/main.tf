@@ -51,7 +51,7 @@ module "cloudrun" {
   name = "${var.environment}-${lower(each.key)}-${random_string.name.result}-${var.appname}"
   location = jsondecode(file("${path.module}/c-code.tftpl"))[each.key]
 
-  image    = "${data.google_container_registry_image.myapp}"
+  image    = data.google_container_registry_image.myapp.image_url
   max_instances = var.max_instances
   min_instances = var.min_instances
 
