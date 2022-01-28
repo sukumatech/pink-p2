@@ -1,0 +1,90 @@
+name: Build and Push React Image to Google Cloud Platform
+on:
+  push:
+    branches: [master]
+jobs:
+  build-push-gcr:
+    name: Build and Push to GCP
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: calc-image
+      PROJECT_ID: test-mala-calc
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Login with GCP
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+      #    export_default_credentials: true​
+      - name: Build Docker Image
+        run: docker build -t $IMAGE_NAME:latest .
+      - name: Configure Docker Client
+        run: |-
+          gcloud auth configure-docker --quiet
+      - name: Push Docker Image to Container Registry
+        env:
+          GIT_TAG: master
+        run: |-
+          docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
+          docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
+          docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
+          docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
+
+
+  terraform:
+    needs: build-push-gcr
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      run: terraform -chdir=profiles/cloudrun init
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
+
+    # Checks that all Terraform Display diffs of formatting changes
+    - name: Terraform Format Diffrences
+      run: terraform -chdir=profiles/cloudrun fmt --diff
+    
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      run: terraform -chdir=profiles/cloudrun fmt -check
+
+    # Generates an execution plan for Terraform
+    - name: Terraform Plan 
+      run: terraform -chdir=profiles/cloudrun plan
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
+    
+    #Apply the plan
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+      run: terraform -chdir=profiles/cloudrun apply -auto-approve
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
+    
+    - name: Terraform Destroy
+      # If any commit message in your push or the HEAD commit of your PR 
+      # contains the strings [detruire] -- then terraform Destry step will run
+      if: "contains(github.event.commits[0].message, 'del')"
+      # terraform plan -destroy
+      run: |
+       terraform -chdir=profiles/cloudrun apply -destroy -auto-approve
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
