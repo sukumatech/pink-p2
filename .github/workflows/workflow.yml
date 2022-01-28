@@ -78,4 +78,3 @@ jobs:
       run: terraform -chdir=profiles/cloudrun apply -auto-approve
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
-        
