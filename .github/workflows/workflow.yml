@@ -74,7 +74,7 @@ jobs:
     
     #Apply the plan
     - name: Terraform Apply
-      if: github.ref == 'refs/heads/gerald_branch' && github.event_name == 'push'
+      if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
       run: terraform -chdir=profiles/cloudrun apply -auto-approve
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY_TF }}
