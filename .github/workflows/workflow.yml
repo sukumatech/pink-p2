@@ -85,4 +85,4 @@ jobs:
       if: "contains(github.event.commits[0].message, 'del')"
       # terraform plan -destroy
       run: |
-       terraform apply -destroy -auto-approve
+       terraform -chdir=profiles/cloudrun apply -destroy -auto-approve
