@@ -20,6 +20,9 @@ provider "docker" {
     password = data.google_client_config.default.access_token
   }
 }
+# ---------------------------------------------------------------------------------------------------------------------
+# image access from registry (export image with docker assigns it to gcp)
+# ---------------------------------------------------------------------------------------------------------------------
 
 data "google_container_registry_image" "myapp_tagged" {
   name = "calc-image"
@@ -35,11 +38,10 @@ data "google_container_registry_image" "myapp" {
   digest = "${data.docker_registry_image.myapp.sha256_digest}"
 }
 
+//output to check the image url
 output "gcr_image_info" {
   value = data.google_container_registry_image.myapp
 }
-
-
 
 # ---------------------------------------------------------------------------------------------------------------------
 # cloudrun
